@@ -1,9 +1,9 @@
 {
-  "author": "Marcelo Gornstein <marcelog@gmail.com> (http://marcelog.github.com/)",
-  "name": "nami",
-  "description": "An asterisk manager interface client, uses EventEmitter to communicate events, will allow you to send actions, and receive responses (and associated events), and also receive async events from server",
+  "author": "Marcelo Gornstein <marcelog@gmail.com> (http://marcelog.github.com)",
+  "name": "nami-raw-callinize",
+  "description": "Minor fork of NAMI.  It adds a raw event emitter and ability to subscribe to events on connect, sets keepalive.  Original Description: An asterisk manager interface client, uses EventEmitter to communicate events, will allow you to send actions, and receive responses (and associated events), and also receive async events from server",
   "version": "0.7.2",
-  "homepage": "https://github.com/marcelog/Nami",
+  "homepage": "https://github.com/callinize/Nami",
   "keywords": [
     "asterisk",
     "manager",
@@ -14,9 +14,31 @@
     "event",
     "node"
   ],
+  "contributors": [
+    {
+      "name": "Marcelo Gornstein",
+      "email": "marcelog@gmail.com",
+      "url": "http://marcelog.github.com"
+    },
+    {
+      "name": "Blake Robertson",
+      "email": "dev@tenfold.com",
+      "url": "http://www.tenfold.com"
+    },
+    {
+      "name": "Patrick Hogan",
+      "email": "dev@tenfold.com",
+      "url": "http://www.tenfold.com"
+    },
+    {
+      "name": "Rhaylander Almeida",
+      "email": "dev@tenfold.com",
+      "url": "http://www.tenfold.com"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/marcelog/Nami.git"
+    "url": "git://github.com/callinize/Nami.git"
   },
   "main": "src/nami",
   "scripts": {

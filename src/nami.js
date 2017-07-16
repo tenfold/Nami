@@ -141,7 +141,9 @@ Nami.prototype.onRawMessage = function (buffer) {
     if (buffer.match(/^Event: /) !== null) {
         event = new namiEvents.Event(buffer);
         this.emit('namiRawEvent', event);
-    } else if (buffer.match(/^Response: /) !== null) {
+        // this.emit('namiRawEvent', event);
+        this.emit('namiRawEventUnmarshalled', buffer); // This includes the raw event unmarshalled with \r\n etc still intact
+    } else if (buffer.match(/^Response: /m) !== null) { // BR: Harwin gets ActionId, Then Response so i added the 'm' for multiline support.
         response = new namiResponse.Response(buffer);
         this.emit('namiRawResponse', response);
     } else {
@@ -187,6 +189,10 @@ Nami.prototype.onClosed = function () {
     this.connected = false;
 };
 
+Nami.prototype.isClosed = function(){
+    return !this.connected;
+};
+
 /**
  * Called when the first line is received from the server. It will check that
  * the other peer is a valid AMI server. If not valid, the event "namiInvalidPeer"
@@ -196,7 +202,7 @@ Nami.prototype.onClosed = function () {
  * On successfull connection, "namiConnected" is emitted.
  * @param {String} data The data read from server.
  * @see Nami#onData(String)
- * @see Login(String, String)
+ * @see Login(String, String, String)
  * @returns void
  */
 Nami.prototype.onWelcomeMessage = function (data) {
@@ -210,7 +216,7 @@ Nami.prototype.onWelcomeMessage = function (data) {
             self.onData(data);
         });
         this.send(
-            new action.Login(this.amiData.username, this.amiData.secret),
+            new action.Login(this.amiData.username, this.amiData.secret, this.amiData.events),
             function (response) {
                 if (response.response !== 'Success') {
                     self.emit('namiLoginIncorrect');
@@ -226,13 +232,19 @@ Nami.prototype.onWelcomeMessage = function (data) {
  * @returns void
  */
 Nami.prototype.close = function () {
-    var self = this;
-    this.send(new action.Logoff(), function () { self.logger.info('Logged out'); });
-    this.logger.info('Closing connection');
-    this.removeAllListeners();
-    this.socket.removeAllListeners();
-    this.socket.end();
-    this.onClosed();
+    try {
+        if(this.isClosed()) return; //do not allow to close a socket twice
+
+        var self = this;
+        this.send(new action.Logoff(), function () { self.logger.info('Logged out'); });
+        this.logger.info('Closing connection');
+        this.removeAllListeners();
+        this.socket.removeAllListeners();
+        this.socket.end();
+        this.onClosed();
+    } catch (e) {
+        this.logger.error(e, "Error occurred trying to close the socket");
+    }
 };
 
 /**
@@ -260,11 +272,14 @@ Nami.prototype.initializeSocket = function () {
 
     this.socket = new net.Socket();
     this.socket.setEncoding('ascii');
+    this.socket.setKeepAlive(true, 100);
+    this.socket.setTimeout(10000);
 
     var baseEvent = 'namiConnection';
 
     this.socket.on('connect', function() {
         self.logger.debug('Socket connected');
+        self.socket.setKeepAlive(true, 100);  // REDUNDENT???
         self.onConnect();
         var event = { event: 'Connect' };
         self.emit(baseEvent + event.event, event);
@@ -299,6 +314,8 @@ Nami.prototype.initializeSocket = function () {
 
     this.socket.once('data', function (data) {
         self.onWelcomeMessage(data);
+        var event = { event: 'Data', data: data };
+        self.emit(baseEvent + event.event, event); // Added by BR
     });
 
     this.socket.connect(this.amiData.port, this.amiData.host);
