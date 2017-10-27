@@ -265,14 +265,6 @@ function AttendedTransfer() {
 	AttendedTransfer.super_.call(this, 'Atxfer');
 }
 
-function AttendedTransferComplete() {
-    AttendedTransferComplete.super_.call(this, 'Atxferabort');
-}
-
-function AttendedTransferCancel() {
-    AttendedTransferCancel.super_.call(this, 'Atxfercomplete');
-}
-
 /**
  * ChangeMonitor Action.
  * @constructor
@@ -1240,8 +1232,6 @@ util.inherits(Action, message.Message);
         AgentLogoff,
         Agents,
         AttendedTransfer,
-        AttendedTransferComplete,
-        AttendedTransferCancel,
         ChangeMonitor,
         Command,
         CreateConfig,

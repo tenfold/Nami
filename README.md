@@ -191,8 +191,6 @@ Supported Actions (Check the api for details)
  - AgentLogoff
  - Agents
  - AttendedTransfer
- - AttendedTransferComplete
- - AttendedTransferCancel
  - ChangeMonitor
  - Command
  - CreateConfig
