@@ -85,6 +85,7 @@ Nami.prototype.onRawEvent = function (event) {
     if (
         typeof (event.actionid) !== 'undefined'
         && typeof (this.responses[event.actionid]) !== 'undefined'
+        && typeof (this.responses[event.actionid].events) !== 'undefined'
         && typeof (this.callbacks[event.actionid]) !== 'undefined'
     ) {
         this.responses[event.actionid].events.push(event);
